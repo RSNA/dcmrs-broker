@@ -15,6 +15,16 @@
 	</properties>
 	<name>DICOMWeb Broker - Core</name>
 	
+	<repositories>
+		<repository>
+			<id>dcm4che</id>
+			<name>DCM4che Maven Repo</name>
+			<url>http://www.dcm4che.org/maven2/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	
 	<dependencies>
 		<dependency>			
