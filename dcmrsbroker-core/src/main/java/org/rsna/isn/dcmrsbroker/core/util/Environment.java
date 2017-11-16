@@ -15,10 +15,13 @@
  */
 package org.rsna.isn.dcmrsbroker.core.util;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigParseOptions;
+import com.typesafe.config.ConfigSyntax;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Level;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,17 +67,12 @@ public class Environment
 				logger.info("Found " + propFile + " file.");
 			}
 
-			try {
-				FileInputStream fin = new FileInputStream(propFile);
-				props = new Properties();
-				props.load(fin);
+			ConfigParseOptions options = ConfigParseOptions.defaults()
+					.setSyntax(ConfigSyntax.CONF);
+			
+			Config config = ConfigFactory.parseFile(propFile,options).resolve();
 
-				fin.close();
-			}
-			catch (IOException ex) {
-				throw new ExceptionInInitializerError(ex);
-			}
-
+			props = toProperties(config);
 			validatePropFile();
 		}
 		else {
@@ -108,6 +106,22 @@ public class Environment
 
 	}
 
+	/**
+	 * Convert Config to Properties
+	 *
+	 * @param config the config (must not be null)
+	 * @return the properties
+	 */
+	private static Properties toProperties(Config config) 
+	{
+        Properties properties = new Properties();
+		
+        config.entrySet().forEach(e -> 
+				properties.setProperty(e.getKey(), config.getString(e.getKey())));
+		
+        return properties;
+    }
+		
 	/**
 	 * Get the configured properties
 	 *
