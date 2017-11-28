@@ -11,14 +11,16 @@ RUN apt-get update && apt-get install -y \
 	maven
 
 RUN mkdir /dcmrs-broker
-ADD . /dcmrs-broker
+COPY . /dcmrs-broker
 
 WORKDIR dcmrs-broker
 
 RUN mvn package
 
-ADD dcmrsbroker.properties  /dcmrs-broker/conf/dcmrsbroker.properties
+COPY dcmrsbroker.properties  /dcmrs-broker/conf/dcmrsbroker.properties
 
 RUN mkdir /dcmrs-broker/cache
+
+ENV SCP_CACHE_DIR_PATH "/dcmrs-broker/cache"
 
 EXPOSE 4567 11112
