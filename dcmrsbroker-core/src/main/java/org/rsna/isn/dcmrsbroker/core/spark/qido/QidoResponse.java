@@ -93,11 +93,12 @@ public class QidoResponse
 			JSONWriter writer = new JSONWriter(gen);
 			for(Attributes dcm : results) {
 				writer.write(dcm);
-
+				
+				gen.writeEnd();
 				gen.flush();
 			}
 
-			gen.writeEnd();
+			gen.writeEnd();		
 			gen.close();
 
 		} else {
