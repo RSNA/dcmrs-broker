@@ -19,8 +19,10 @@ import org.rsna.isn.dcmrsbroker.core.spark.qido.QueryParameters;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.data.UID;
@@ -29,6 +31,7 @@ import org.dcm4che3.net.Association;
 import org.dcm4che3.net.DimseRSPHandler;
 import org.dcm4che3.net.IncompatibleConnectionException;
 import org.dcm4che3.net.QueryOption;
+import org.dcm4che3.net.pdu.ExtendedNegotiation;
 import static org.rsna.isn.dcmrsbroker.core.dcm.Level.*;
 import org.rsna.isn.dcmrsbroker.core.dcm.Scu;
 import org.rsna.isn.dcmrsbroker.core.util.Environment;
@@ -46,12 +49,24 @@ public class FindScu extends Scu
 {
 	private static final Logger logger = LoggerFactory.getLogger(FindScu.class);
 
-	// TODO: Expand this list to include all required attributes
 	public AttributeId REQUIRED_STUDY_ATTRIBUTE_IDS[] = {
 		new AttributeId("SpecificCharacterSet"),
 		new AttributeId("StudyDate"),
 		new AttributeId("StudyTime"),
-		new AttributeId("AccessionNumber")
+		new AttributeId("AccessionNumber"),
+		new AttributeId("InstanceAvailability"),
+		new AttributeId("ModalitiesInStudy"),
+		new AttributeId("ReferringPhysicianName"),
+		new AttributeId("TimezoneOffsetFromUTC"),
+		new AttributeId("RetrieveURL"),
+		new AttributeId("PatientName"),
+		new AttributeId("PatientID"),
+		new AttributeId("PatientBirthDate"),
+		new AttributeId("PatientSex"),
+		new AttributeId("StudyInstanceUID"),
+		new AttributeId("StudyID"),
+		new AttributeId("NumberOfStudyRelatedSeries"),
+		new AttributeId("NumberOfStudyRelatedInstances")
 	};
 
 	public FindScu()
@@ -70,7 +85,7 @@ public class FindScu extends Scu
 		Association assoc = connect();
 		try {
 			ResponseHandler handler = new ResponseHandler(assoc, params);
-
+			
 			Attributes query = new Attributes();
 			if (params.getLevel().equals(STUDY)) {
 				ensure(query, REQUIRED_STUDY_ATTRIBUTE_IDS);
