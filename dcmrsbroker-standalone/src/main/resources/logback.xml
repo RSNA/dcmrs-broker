@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--                                                           -->
+<!--           Logging config for DICOMWeb broker              -->
+<!--                                                           -->
+
+<configuration debug="false"> 
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%.-1level [%d{MM/dd/yyyy HH:mm:ss.SSS}] %C.%M:%L "%m"%n</pattern>
+		</encoder>
+	</appender>
+
+	<root level="info">
+		<appender-ref ref="console" />
+	</root>
+</configuration>

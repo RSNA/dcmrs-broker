@@ -181,7 +181,7 @@ public class Environment
 		WADO_REMOTE_AE("wado.remote_ae", true),
 		WADO_LOCAL_AE("wado.local_ae", true),
 		WADO_REMOTE_HOST("wado.remote_host", true),
-		WADO_REMOTE_PORT("wado.remote_port", "104"),
+		WADO_REMOTE_PORT("wado.remote_port", "11112"),
 		WADO_HTTP_RETRY_AFTER("wado.http_retry_after", "600"),
 		WADO_RETRY_DELAY_IN_SECS("wado.retry_delay_in_secs", "600"),
 		WADO_MAX_RETRY_ATTEMPTS("wado.max_retry_attempts", "6"),

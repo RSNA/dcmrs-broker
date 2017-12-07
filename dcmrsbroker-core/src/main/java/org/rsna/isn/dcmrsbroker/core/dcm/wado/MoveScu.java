@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutorService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
@@ -108,7 +109,7 @@ public class MoveScu extends Scu implements Runnable
 
 							logger.info("Completed C-MOVE for request: {} after {} retries. Completed: {}. Warning: {}.",
 										params,
-										i, 
+										i,
 										handler.completed,
 										handler.warning);
 
@@ -250,7 +251,13 @@ public class MoveScu extends Scu implements Runnable
 					releaseGracefully();
 				}
 
-				Thread.sleep(retryDelay);
+				if (i < (retryAttempts - 1)) {
+					logger.warn("Retrying C-MOVE request for {} in {} sec(s)", 
+								params, 
+								DurationFormatUtils.formatDuration(retryDelay, "s"));
+					
+					Thread.sleep(retryDelay);
+				}
 			}
 
 

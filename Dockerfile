@@ -3,6 +3,7 @@ MAINTAINER Clifton Li
 
 ENTRYPOINT ["/usr/bin/java", \ 
 			"-Ddcmrsbroker.home=/dcmrs-broker", \
+			"-Dlogback.configurationFile=/dcmrs-broker/conf/logging.xml", \
 			"-jar", \
 			"/dcmrs-broker/dcmrsbroker-distribution/target/distribution-binaries/dcmrsbroker-standalone.jar"]
 			

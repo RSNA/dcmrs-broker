@@ -18,7 +18,6 @@
 package org.rsna.isn.dcmrsbroker.core.spark.wado;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.Set;

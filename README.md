@@ -1,89 +1,153 @@
-# dcmrs-broker
-DICOM-RS Broker
+# DICOM-RS Broker
 
-## Installation
-dcmrs-broker.home
 
-dcmrs-broker can be run standalone or as a docker container.  
+A web application for adding [DICOM-RS](https://dicomweb.hcintegrations.ca/) support to legacy PACS archives.  
+
+The broker currently supports translating [QIDO-RS](http://medical.nema.org/medical/dicom/current/output/chtml/part18/sect_6.7.html) and [WADO-RS](http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.5.html) requests to the corresponding C-FIND and C-MOVE transactions.  
+
+## Running the Application
+
+The DICOM RS broker can be run **standalone** or as a **docker container**.  
 
 ### Standalone Installation
 
+#### Build project
+
+
+* ` mvn package `
+
+#### Setup configuration
+
+Create a home directory with a `conf` subdirectory for the configuration files. For example: 
+
+* `mkdir -p /usr/local/dcmrs-broker/conf`
+
+Copy the sample `dcmrs-broker.properties` properties file to the `conf` subdirectory you just created. For example:
+
+* `cp ${SOURCE_DIR}/dcmrsbroker.properties  /usr/local/dcmrs-broker/conf`
+
+Modify the properties in the `dcmrs-broker.properties` file to match your environment (see definition of configuration options below). 
+
+#### Launch app
+
+Run the app using `java`. For example: 
+
 ```
-mvn package 
+java \
+	-Ddcmrsbroker.home=/usr/local/dcmrs-broker \
+	${SOURCE_DIR}/dcmrsbroker-distribution/target/distribution-binaries/dcmrsbroker-standalone.jar
 ```
 
-Modify the configuation variable in dcmrs-broker.properties. 
 
-Create a home and a conf directory. Copy the properties file to ${dcmrs-broker.home}/conf.
+####  Logging configuration (optional)
+
+The broker utilizes Logback for logging. By default the configuration is set to log INFO level events to the console.  To override this behavior create a Logback configuration file and pass the location as a Java system property named `logback.configurationFile`.  For example:
+
+For example if you created a configuration file at `/usr/local/dcmrs-broker/conf/logging.xml`, the `java` command would look like:
 
 ```
-i.e mkdir -p /usr/local/dcmrs-broker/conf
+java \
+	-Ddcmrsbroker.home=/usr/local/dcmrs-broker \
+	-Dlogback.configurationFile=/usr/local/dcmrs-broker/conf/logging.xml \
+	${SOURCE_DIR}/dcmrsbroker-distribution/target/distribution-binaries/dcmrsbroker-standalone.jar
 ```
 
-#### Usage 
-```
-java -D dcmrsbroker.home=/usr/local/dcmrs-broker ${SOURCE_DIR}/dcmrsbroker-distribution/target/distribution-binaries/dcmrsbroker-standalone.jar
-
-````
+For more information see the [Logback Documentation](https://logback.qos.ch/manual/configuration.html#configFileProperty).
 
 ### Docker Installation
 
-```
-docker build -t rsna/dcmrs-broker .
-```
-
 #### Run the image
+
+Note: you will need to modify the environment variables to match your setup (see definition of configuration options below). 
 
 ```
 docker run \
     -p 4567:4567 \
     -p 11112:11112 \
-    -e QIDO_REMOTE_AE="PARN-DICOM" \
-    -e QIDO_REMOTE_HOST="dicom.radiology.ucsf.edu" \
+    -e QIDO_REMOTE_AE="CFIND-SCP" \
+    -e QIDO_REMOTE_HOST="dicom.example.com" \
     -e QIDO_REMOTE_PORT="104" \
-    -e QIDO_LOCAL_AE="PACS-3502-TESTING" \
-    -e WAD0_REMOTE_AE="PARN-DICOM" \
-    -e WADO_REMOTE_HOST="dicom.radiology.ucsf.edu" \
-    -e WADO_LOCAL_AE="104" \
-    -e SCP_LOCAL_AE="PACS-3502-SCP" \
+    -e QIDO_LOCAL_AE="DCMRS-BROKER-SCU" \
+    -e WAD0_REMOTE_AE="CMOVE-SCP" \
+    -e WADO_REMOTE_HOST="dicom.example.com" \
+    -e WADO_REMOTE_PORT="104" \
+    -e WADO_LOCAL_AE="DCMRS-BROKER-SCU" \
+    -e SCP_LOCAL_AE="DCMRS-BROKER-SCP" \
     rsna/dcmrsbroker
 ```
 
-### Configuration variables
+####  Logging configuration (optional)
+The broker utilizes Logback for logging. By default the configuration is set to log INFO level events to the console.  To override this behavior create a Logback configuration file and mount it to `/dcmrs-broker/conf/logging.xml`.  
 
-QIDO_REMOTE_AE                              # AE title of the remote device ie. PACS<br />  
-QIDO_REMOTE_HOST							# Hostname of the remote device<br /> 
-QIDO_REMOTE_PORT							# Port number of the remote device<br />
-QIDO_LOCAL_AE								# AE title of the callling device<br /><br />
+For example if you created a configuration file at `/usr/local/custom-logging.xml`, the `docker run` command would look like:
 
-WAD0_REMOTE_AE								# AE title of the remote device ie. PACS<br />
-WADO_REMOTE_HOST							# Hostname of the remote device<br />
-WADO_REMOTE_PORT							# Port number of the remote device<br />
-WADO_LOCAL_AE								# AE title of the callling device<br />
+```
+docker run \
+    -p 4567:4567 \
+    -p 11112:11112 \
+	-v /usr/local/custom-logging.xml:/dcmrs-broker/conf/logging.xml \
+    -e QIDO_REMOTE_AE="CFIND-SCP" \
+    -e QIDO_REMOTE_HOST="dicom.example.com" \
+    -e QIDO_REMOTE_PORT="104" \
+    -e QIDO_LOCAL_AE="DCMRS-BROKER-SCU" \
+    -e WAD0_REMOTE_AE="CMOVE-SCP" \
+    -e WADO_REMOTE_HOST="dicom.example.com" \
+    -e WADO_REMOTE_PORT="104" \
+    -e WADO_LOCAL_AE="DCMRS-BROKER-SCU" \
+    -e SCP_LOCAL_AE="DCMRS-BROKER-SCP" \
+    rsna/dcmrsbroker
+```
 
-SCP_LOCAL_AE								# AE title of the callling device<br />
-SCP_CACHE_DIR_PATH                          # Directory for cached files<br />
+For more information see the [Logback Documentation](https://logback.qos.ch/manual/configuration.html).
 
-#### Optional Configuation Properties
-#### Do not modify if you plan to use default values
+## Configuration 
 
-QIDO_URL 									# Default /qido-rs<br /><br />
+### Required Properties
+The following properties are required for the broker to run:
 
-WADO_URL_BASE								# Default /wado-rs<br />
-WADO_HTTP_RETRY_AFTER                       # Default 600<br />
-WADO_RETRY_DELAY_IN_SECS                    # Default 600<br />
-MAX_RETRY_ATTEMPT                           # Default 6<br />
-WADO_RETRIEVE_TIMEOUT_IN_SECS               # Default 120<br />
-WADO_IGNORE_MISSING_OBJECTS                 # Default false<br /><br />
+Java Property Name|Docker Environment Variable Name|Description|Default Value
+-|-|-|-
+qido.remote_ae|QIDO_REMOTE_AE|AE title of the SCP that services C-FIND requests (i.e. called AE title)|N/A
+qido.remote_host|QIDO_REMOTE_HOST|host or IP address of the SCP that services C-FIND requests|N/A
+qido.remote_port|QIDO_REMOTE_PORT|port of the SCP that services C-FIND requests|11112
+qido.local_ae|QIDO_LOCAL_AE|AE title used by the broker when making C-FIND requests (i.e. calling AE title)|N/A
+wado.remote_ae|WAD0_REMOTE_AE|AE title of the SCP that services C-MOVE requests (i.e. called AE title)|N/A
+wado.remote_host|WADO_REMOTE_HOST|host or IP address of the SCP that services C-MOVE requests|N/A
+wado.remote_port|WADO_REMOTE_PORT|port of the SCP that services C-MOVE requests|11112
+wado.local_ae|WADO_LOCAL_AE|AE title used by the broker when making C-MOVE requests (i.e. calling AE title)|N/A
+scp.local_ae|SCP_LOCAL_AE|AE title of the C-STORE SCP used for receiving images (i.e. called AE title)|NA
+scp.local_port|SCP_LOCAL_PORT|the port the SCP will listen on|11112
+scp.cache_dir_path|SCP_CACHE_DIR_PATH|Path to directory for cached files|`/dcmrs-broker/cache` in docker image
 
-SCP_LOCAL_PORT								# Default 11112<br />
-SCP_CACHE_MAX_AGE_IN_MIN                    # Default 60<br />
 
 
-### Service URL
+### Optional Properties
+The following properties are available to modify the default behavior of the broker:
 
-http://localhost:4567/qido-rs/studies{?query*,fuzzymatching,limit,offset}<br />
-http://localhost:4567/qido-rs/series{?query*,fuzzymatching,limit,offset}<br />
-http://localhost:4567/qido-rs/instances{?query*,fuzzymatching,limit,offset}<br /><br />
+Java Property Name|Docker Environment Variable Name|Description|Default Value
+-|-|-|-
+qido.url_base|QIDO_URL_BASE|The base URL for QIDO requests|`/qido-rs`
+wado.url_base|WADO_URL_BASE|The base URL for WADO requests|`/wado-rs`
+wado.http_retry_after|WADO_HTTP_RETRY_AFTER|The value (in secs) to include in the HTTP `Retry-After` header in a `503` response|600
+wado.max_retry_attempts|WADO_MAX_RETRY_ATTEMPTS|The number of times the broker should retry failed C-MOVE requests|6
+wado.retry_delay_in_secs|WADO_RETRY_DELAY_IN_SECS|The number of seconds the broker should wait between retrying failed C-MOVE requests|600
+wado.retrieve_timeout_in_secs|WADO_RETRIEVE_TIMEOUT_IN_SECS|The number of seconds to wait after a C-MOVE request has completed for all images to arrive |120
+wado.ignore_missing_objects|WADO_IGNORE_MISSING_OBJECTS|Flag indicating if the broker should require the numbers of images received match the number of images indicated in the C-MOVE response.  |false
+scp.cache_max_age_in_min| SCP_CACHE_MAX_AGE_IN_MIN|The number of minutes the broker should store a study in its local cache|60
 
-http://localhost:4567/wado-rs/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}/instances/{SOPInstanceUID}
+
+
+
+## Usage
+
+### QIDO
+* Find studies: `http://localhost:4567/qido-rs/studies{?query*,fuzzymatching,limit,offset}`
+* Find series: `http://localhost:4567/qido-rs/series{?query*,fuzzymatching,limit,offset}`
+* Find objects: `http://localhost:4567/qido-rs/instances{?query*,fuzzymatching,limit,offset}`
+
+### WADO
+* Retrieve studies: `http://localhost:4567/wado-rs/studies/{StudyInstanceUID}`
+* Retrieve series: `http://localhost:4567/wado-rs/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}`
+* Retrieve object: `http://localhost:4567/wado-rs/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}/instances/{SOPInstanceUID}`
+
+Note: Currently only the retrieval of DICOM Part 10 objects is supported. The retrieval of bulk data and meta data are not supported. 

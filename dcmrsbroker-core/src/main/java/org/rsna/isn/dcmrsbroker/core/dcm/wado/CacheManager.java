@@ -23,6 +23,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dcm4che3.data.Attributes;
@@ -56,7 +57,18 @@ class CacheManager
 		cacheDir = new File(path);
 
 		if (!cacheDir.isDirectory()) {
+			logger.warn("{} is not a directory.", cacheDir);
+			
 			throw new ExceptionInInitializerError(cacheDir + " is not a directory.");
+		}
+		
+		try {
+			FileUtils.cleanDirectory(cacheDir);
+		}
+		catch (IOException ex) {
+			logger.warn("Unable to purge cache directory: " + cacheDir, ex);
+			
+			throw new ExceptionInInitializerError(ex);
 		}
 		
 		CacheReaper reaper = new CacheReaper();
