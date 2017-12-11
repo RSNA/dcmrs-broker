@@ -20,8 +20,4 @@ RUN mvn package
 
 COPY dcmrsbroker.properties  /dcmrs-broker/conf/dcmrsbroker.properties
 
-RUN mkdir /dcmrs-broker/cache
-
-ENV SCP_CACHE_DIR_PATH "/dcmrs-broker/cache"
-
 EXPOSE 4567 11112
