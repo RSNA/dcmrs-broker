@@ -73,6 +73,7 @@ docker run \
     -e WADO_REMOTE_PORT="104" \
     -e WADO_LOCAL_AE="DCMRS-BROKER-SCU" \
     -e SCP_LOCAL_AE="DCMRS-BROKER-SCP" \
+    -e SCP_CACHE_DIR_PATH=/dcmrs-broker/cache \
     rsna/dcmrsbroker
 ```
 
