@@ -112,14 +112,19 @@ public class QidoResponse
 			for(Attributes dcm : results) {
 				MultipartRelatedOutputStream.Part part = 
 								new MultipartRelatedOutputStream.Part(APPLICATION_DICOM_XML);
-				
+
 				SAXTransformerFactory tf = (SAXTransformerFactory) TransformerFactory.newInstance();
 				TransformerHandler handler = tf.newTransformerHandler();
 				handler.setResult(new StreamResult(out));
 				SAXWriter writer = new SAXWriter(handler);
-				
+
 				out.addPart(part);
-				writer.write(dcm);
+
+				if (dcm != null) {
+					writer.write(dcm);					
+				} else {
+					writer.write(new Attributes());
+				}
 			}
 		}
 

@@ -1,4 +1,3 @@
-# Use docker-based build environment (instead of openvz)
 sudo: false
 
 language: java
