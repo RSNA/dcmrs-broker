@@ -82,6 +82,11 @@ public class QidoResponse
 		FindScu cfind = new FindScu();
 		List<Attributes> results = cfind.doQuery(params);
 		
+		if(results.isEmpty()) {
+			response.status(204);
+			return "";
+		}
+		
 		if (this.request.headers("Accept").equals("application/json")) {
 			
 			this.response.header("Content-Type", "application/dicom+json");
@@ -93,21 +98,21 @@ public class QidoResponse
 			JSONWriter writer = new JSONWriter(gen);
 			
 			for(Attributes dcm : results) {
-				if (dcm != null) {
 					writer.write(dcm);
 					gen.flush();
-				}
 			}
 			
 			gen.writeEnd();
 			gen.close();
 
-		} else {
+		} else {			
 			response.header("Content-Type", "multipart/related; type=\"application/dicom+xml\"");
 			
 			MultipartRelatedOutputStream out = new MultipartRelatedOutputStream(
 								response.raw().getOutputStream(),
 								APPLICATION_DICOM_XML);
+			
+			response.type(out.getContentType());
 			
 			for(Attributes dcm : results) {
 				MultipartRelatedOutputStream.Part part = 
@@ -119,15 +124,11 @@ public class QidoResponse
 				SAXWriter writer = new SAXWriter(handler);
 
 				out.addPart(part);
-
-				if (dcm != null) {
-					writer.write(dcm);					
-				} else {
-					writer.write(new Attributes());
-				}
+				writer.write(dcm);	
 			}
+			
+			out.finish();
 		}
-
 		return null;	
 	}
 }

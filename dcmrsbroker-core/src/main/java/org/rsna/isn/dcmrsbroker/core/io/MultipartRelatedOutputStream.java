@@ -121,10 +121,6 @@ public class MultipartRelatedOutputStream extends FilterOutputStream
 	 */
 	public void finish() throws IOException
 	{
-		if (currentPart == null) {
-			throw new IOException("No part currently defined");
-		}
-
 		IOUtils.write("\r\n", out, "UTF-8");
 		IOUtils.write("--" + boundary + "--", out, "UTF-8");
 
