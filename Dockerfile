@@ -16,8 +16,12 @@ COPY . /dcmrs-broker
 
 WORKDIR dcmrs-broker
 
+RUN mkdir cache
+
 RUN mvn package
 
 COPY dcmrsbroker.properties  /dcmrs-broker/conf/dcmrsbroker.properties
+
+COPY logging.xml /dcmrs-broker/conf/logging.xml
 
 EXPOSE 4567 11112
