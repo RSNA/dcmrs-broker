@@ -31,6 +31,7 @@ import org.dcm4che3.net.Association;
 import org.dcm4che3.net.DimseRSPHandler;
 import org.dcm4che3.net.IncompatibleConnectionException;
 import org.dcm4che3.net.QueryOption;
+import org.dcm4che3.net.Status;
 import org.dcm4che3.net.pdu.ExtendedNegotiation;
 import static org.rsna.isn.dcmrsbroker.core.dcm.Level.*;
 import org.rsna.isn.dcmrsbroker.core.dcm.Scu;
@@ -134,7 +135,11 @@ public class FindScu extends Scu
 
 			if (index++ >= offset) {
 				if (limit == 0 || results.size() < limit) {
-					results.add(data);
+					int status = cmd.getInt(Tag.Status, -1);
+					if(Status.isPending(status)) {
+						results.add(data);
+					}
+
 				}
 				else {
 					// TODO: Add support for issuing a cancel
