@@ -68,7 +68,7 @@ docker run \
     -e QIDO_REMOTE_HOST="dicom.example.com" \
     -e QIDO_REMOTE_PORT="104" \
     -e QIDO_LOCAL_AE="DCMRS-BROKER-SCU" \
-    -e WAD0_REMOTE_AE="CMOVE-SCP" \
+    -e WADO_REMOTE_AE="CMOVE-SCP" \
     -e WADO_REMOTE_HOST="dicom.example.com" \
     -e WADO_REMOTE_PORT="104" \
     -e WADO_LOCAL_AE="DCMRS-BROKER-SCU" \
@@ -90,7 +90,7 @@ docker run \
     -e QIDO_REMOTE_HOST="dicom.example.com" \
     -e QIDO_REMOTE_PORT="104" \
     -e QIDO_LOCAL_AE="DCMRS-BROKER-SCU" \
-    -e WAD0_REMOTE_AE="CMOVE-SCP" \
+    -e WADO_REMOTE_AE="CMOVE-SCP" \
     -e WADO_REMOTE_HOST="dicom.example.com" \
     -e WADO_REMOTE_PORT="104" \
     -e WADO_LOCAL_AE="DCMRS-BROKER-SCU" \
