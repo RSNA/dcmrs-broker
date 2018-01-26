@@ -114,7 +114,7 @@ qido.remote_ae|QIDO_REMOTE_AE|AE title of the SCP that services C-FIND requests 
 qido.remote_host|QIDO_REMOTE_HOST|host or IP address of the SCP that services C-FIND requests|N/A
 qido.remote_port|QIDO_REMOTE_PORT|port of the SCP that services C-FIND requests|11112
 qido.local_ae|QIDO_LOCAL_AE|AE title used by the broker when making C-FIND requests (i.e. calling AE title)|N/A
-wado.remote_ae|WAD0_REMOTE_AE|AE title of the SCP that services C-MOVE requests (i.e. called AE title)|N/A
+wado.remote_ae|WADO_REMOTE_AE|AE title of the SCP that services C-MOVE requests (i.e. called AE title)|N/A
 wado.remote_host|WADO_REMOTE_HOST|host or IP address of the SCP that services C-MOVE requests|N/A
 wado.remote_port|WADO_REMOTE_PORT|port of the SCP that services C-MOVE requests|11112
 wado.local_ae|WADO_LOCAL_AE|AE title used by the broker when making C-MOVE requests (i.e. calling AE title)|N/A
