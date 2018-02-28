@@ -18,9 +18,7 @@ package org.rsna.isn.dcmrsbroker.core.spark;
 import org.rsna.isn.dcmrsbroker.core.dcm.Level;
 import org.rsna.isn.dcmrsbroker.core.dcm.wado.StoreScp;
 import org.rsna.isn.dcmrsbroker.core.spark.qido.QidoSearch;
-import org.rsna.isn.dcmrsbroker.core.spark.wado.RetrieveInstance;
-import org.rsna.isn.dcmrsbroker.core.spark.wado.RetrieveSeries;
-import org.rsna.isn.dcmrsbroker.core.spark.wado.RetrieveStudies;
+import org.rsna.isn.dcmrsbroker.core.spark.wado.WadoRoute;
 import org.rsna.isn.dcmrsbroker.core.util.Environment;
 import static org.rsna.isn.dcmrsbroker.core.util.Environment.Key.*;
 import org.slf4j.Logger;
@@ -59,9 +57,9 @@ public class Router implements SparkApplication
 		get(qidoBase + "/studies/:studyUid/series/:seriedUid/instances", new QidoSearch(Level.IMAGE));
 		
 		String wadoBase = Environment.getProperty(WADO_URL_BASE);
-		get(wadoBase + "/studies/:studyUid", new RetrieveStudies());
-		get(wadoBase + "/studies/:studyUid/series/:seriesUid", new RetrieveSeries());
-		get(wadoBase + "/studies/:studyUid/series/:seriesUid/instances/:instanceUid", new RetrieveInstance());
+		get(wadoBase + "/studies/:studyUid", new WadoRoute(Level.STUDY));
+		get(wadoBase + "/studies/:studyUid/series/:seriesUid", new WadoRoute(Level.SERIES));
+		get(wadoBase + "/studies/:studyUid/series/:seriesUid/instances/:instanceUid", new WadoRoute(Level.IMAGE));
 	}
 
 	@Override

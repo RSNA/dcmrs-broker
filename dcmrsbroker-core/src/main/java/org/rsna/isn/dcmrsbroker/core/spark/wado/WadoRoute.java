@@ -17,7 +17,8 @@ package org.rsna.isn.dcmrsbroker.core.spark.wado;
 
 import java.util.List;
 import javax.ws.rs.core.MediaType;
-import static org.dcm4che3.ws.rs.MediaTypes.*;
+import static org.dcm4che3.ws.rs.MediaTypes.APPLICATION_DICOM_TYPE;
+import static org.dcm4che3.ws.rs.MediaTypes.getMultiPartRelatedType;
 import org.rsna.isn.dcmrsbroker.core.dcm.Level;
 import org.rsna.isn.dcmrsbroker.core.dcm.wado.CacheEntry;
 import org.rsna.isn.dcmrsbroker.core.dcm.wado.CacheEntry.Status;
@@ -26,24 +27,28 @@ import org.rsna.isn.dcmrsbroker.core.dcm.wado.MoveScu;
 import org.rsna.isn.dcmrsbroker.core.util.Environment;
 import static org.rsna.isn.dcmrsbroker.core.util.Environment.Key.*;
 import org.rsna.isn.dcmrsbroker.core.util.HttpUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
 /**
- * Base class for all routes that service WADO-RS requests
+ * Route that services WADO-RS requests
  *
  * @author Wyatt Tellis
  * @since 1.0.0
  * @version 1.0.0
  */
-abstract class WadoRoute implements Route
+public class WadoRoute implements Route
 {
+	private static final Logger logger = LoggerFactory.getLogger(WadoRoute.class);
+	
 	private static String retryAfter = Environment.getProperty(WADO_HTTP_RETRY_AFTER);
 
 	protected final Level level;
 
-	protected WadoRoute(Level level)
+	public WadoRoute(Level level)
 	{
 		this.level = level;
 	}
@@ -75,6 +80,8 @@ abstract class WadoRoute implements Route
 				return wRsp.send();
 			}
 			else {
+				logger.warn("Unsupported accept type: " + request.headers("Accept"));
+				
 				response.status(406);
 
 				return "";
@@ -82,8 +89,23 @@ abstract class WadoRoute implements Route
 		}
 	}
 
-	protected abstract WadoResponse buildResponse(Request request,
-												  Response response,
-												  CacheEntry entry) throws Exception;
+	private WadoResponse buildResponse(Request request,
+									   Response response,
+									   CacheEntry entry) throws Exception
+	{
+		List<MediaType> acceptable = HttpUtil.getAcceptableMediaTypes(request);
+		MediaType primary = getMultiPartRelatedType(acceptable.get(0));
+
+		if (APPLICATION_DICOM_TYPE.equals(primary)
+			|| MediaType.WILDCARD_TYPE.equals(primary)) {
+
+			return new DicomMultipartResponse(entry, request, response);
+		}
+		else {
+			// return new BulkDataMultipartResponse(entry, request, response);
+
+			return null;
+		}
+	}
 
 }
