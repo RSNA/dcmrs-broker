@@ -141,16 +141,18 @@ scp.cache_max_age_in_min| SCP_CACHE_MAX_AGE_IN_MIN|The number of minutes the bro
 
 
 
-## Usage
+## Example Usage with curl
 
 ### QIDO
-* Find studies: `http://localhost:4567/qido-rs/studies{?query*,fuzzymatching,limit,offset}`
-* Find series: `http://localhost:4567/qido-rs/series{?query*,fuzzymatching,limit,offset}`
-* Find objects: `http://localhost:4567/qido-rs/instances{?query*,fuzzymatching,limit,offset}`
+```
+curl -H "Accept: application/json" http://localhost:4567/qido-rs/studies{?query*,fuzzymatching,limit,offset}
+```
+
 
 ### WADO
-* Retrieve studies: `http://localhost:4567/wado-rs/studies/{StudyInstanceUID}`
-* Retrieve series: `http://localhost:4567/wado-rs/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}`
-* Retrieve object: `http://localhost:4567/wado-rs/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}/instances/{SOPInstanceUID}`
+```
+curl -H "Accept:  multipart/related; type=\"application/dicom\"" \
+        http://localhost:4567/wado-rs/studies/{StudyInstanceUID}
+```
 
 Note: Currently only the retrieval of DICOM Part 10 objects is supported. The retrieval of bulk data and meta data are not supported. 
